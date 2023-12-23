@@ -1,3 +1,7 @@
+import asyncio
+import logging
+import time
+
 import telebot
 from django.conf import settings
 from django.http import HttpResponse
@@ -29,7 +33,7 @@ def telegram_webhook(request):
 def send_welcome(message):
     # menu
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    item1 = types.KeyboardButton("Info")
+    item1 = types.KeyboardButton("status")
     item2 = types.KeyboardButton("send point", request_location=True)
     markup.row(item1, item2)
 
@@ -96,3 +100,36 @@ def process_description_input(message, place_id):
         message.chat.id,
         f'Описание сохранено: {message.text} {place_id}'
     )
+
+
+@bot.message_handler(func=lambda message: message.text == 'status')
+def echo_message(message):
+
+    row_width = 3  # Задаем количество кнопок в каждом ряду
+    markup = types.InlineKeyboardMarkup()
+
+    button1 = types.InlineKeyboardButton('one', callback_data=f'one:')
+    button2 = types.InlineKeyboardButton('two', callback_data=f'two:')
+    button3 = types.InlineKeyboardButton('tree', callback_data=f'tree:')
+
+    buttons = [button1, button2, button3]
+
+    for i in range(0, len(buttons), row_width):
+        row_buttons = buttons[i:i + row_width]
+        markup.add(*row_buttons)
+
+    # for i in range(6):
+    #     button = types.InlineKeyboardButton('aaaa', callback_data=f'district:')
+    #     markup.add(button)
+
+    bot.send_message(
+        message.chat.id,
+        f'yohoho',
+        parse_mode='Markdown',
+        reply_markup=markup
+    )
+
+
+
+
+
